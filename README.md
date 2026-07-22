@@ -9,19 +9,27 @@
 - 经常做纯静态 HTML 原型 demo、需要给客户/评审讲解每个需求在界面上的落点。
 - 用 Claude Code / Codex 等 AI 工具辅助开发，希望「做完 demo → 一句话生成讲解」。
 
-## 30 秒上手
+## 全局安装（推荐：一次安装，所有 demo 通用）
 
-### Claude Code
-1. 把本仓库内容拷进你的 demo 项目根目录（至少 `engine/`、`PLAYBOOK.md`、`explain-config.template.js`、`.claude/`）。
-2. 在 demo 项目里敲 `/explain`（来自 `.claude/commands/explain.md`）。
-3. Claude 读 `PLAYBOOK.md`，给涉及页面加 include、按你的需求文档生成 `explain-config.js`。
-4. 浏览器打开 demo，点右下角「📖 需求讲解」。
+不想每个 demo 都拷文件？装一次到全局，以后在任何 demo 文件夹敲 `/explain` 即可。
 
-### Codex / Cursor / 其它 AI 工具
-1. 同样把 `engine/`、`PLAYBOOK.md`、`explain-config.template.js` 拷进 demo 项目。
-2. 给涉及页面手动加 3 行 include（见 `PLAYBOOK.md`「安装步骤」）。
-3. 对 AI 说：「读 `PLAYBOOK.md`，按里面的流程给这个 demo 加需求讲解，并生成 `explain-config.js`」。
-4. （可选）把这句加进项目的 `AGENTS.md`，下次直接说「加需求讲解」即可。
+```sh
+git clone https://github.com/shawyingying/explain-kit.git
+cd explain-kit
+./install-global.sh
+```
+
+脚本会把 `engine/`+`PLAYBOOK.md`+模板装到 `~/.explain-kit/`，把 `/explain` 命令装到 `~/.claude/commands/`（用户级，所有项目可用）。之后：
+
+- **Claude Code**：在任意 demo 文件夹敲 `/explain`，命令自动从 `~/.explain-kit/` 拷引擎进 demo、加 include、按需求文档生成 `explain-config.js`。
+- **Codex / Cursor / 其它 AI 工具**：对其说「读 `~/.explain-kit/PLAYBOOK.md`，给当前 demo 加需求讲解」。
+
+> 引擎文件仍会落到每个 demo 里（浏览器需从本地加载），但 `/explain` 全自动完成，无需手动拷。
+> 更新：重新跑 `./install-global.sh`（幂等）。
+
+## 或：单次拷入某个 demo（不装全局）
+
+如果只想给单个 demo 装、不留全局：把 `engine/`、`PLAYBOOK.md`、`explain-config.template.js`、`.claude/` 拷进该 demo 项目根，然后在 demo 里敲 `/explain`（命令会用 demo 内的本地 `engine/`+`PLAYBOOK.md`）。Codex / 其它工具同理，让 AI 读 demo 内的 `PLAYBOOK.md`。
 
 ## 仓库结构
 
@@ -31,7 +39,10 @@ engine/                     # 通用引擎（drop-in，勿改）
   explain.css               # 样式
 explain-config.template.js  # 起始模板，复制为 explain-config.js 后由 AI 填写
 PLAYBOOK.md                 # AI 指令手册（核心，AI 按此操作）
-.claude/commands/explain.md # Claude Code 的 /explain 斜杠命令
+install-global.sh           # 全局安装脚本（装到 ~/.explain-kit/ + ~/.claude/commands/）
+launchers/
+  explain.global.md         # 全局 /explain 命令（install-global.sh 装到 ~/.claude/commands/）
+.claude/commands/explain.md # 项目级 /explain 命令（拷入 demo 时用本地 engine/PLAYBOOK）
 examples/REQK-01/           # 真实 demo 的参考配置（6 步、跨 3 页、含自定义动作与异常态模拟）
 README.md                   # 本文件
 ```
