@@ -43,7 +43,7 @@ engine/                     # 通用引擎（drop-in，勿改）
   explain.css
 PLAYBOOK.md                 # AI 指令手册（核心，所有工具共用）
 explain-config.template.js  # 起始模板，复制为 explain-config.js 后由 AI 填写
-examples/REQK-01/           # 真实 demo 参考配置（6 步、跨 3 页、含自定义动作与异常态模拟）
+examples/REQ-DEMO-01/         # 合成参考示例（虚构 demo，6 步、跨 3 页、含自定义动作与异常态模拟）
 launchers/
   codex-AGENTS.md           # Codex 常驻指令 stub
   cursor-rule.mdc           # Cursor 规则 stub
