@@ -9,8 +9,11 @@ description: 给静态 HTML 原型 demo 加「需求讲解」遮罩层——右�
 
 ## 资源（本 skill 自带，位于 skill 目录）
 
-skill 目录 = 环境变量 `${CLAUDE_SKILL_DIR}`（通常 `~/.claude/skills/explain/`）。内含：
+skill 目录：
+- **Claude Code** → `${CLAUDE_SKILL_DIR}`（通常 `~/.claude/skills/explain/`）
+- **Codex** → `~/.codex/skills/explain/`
 
+内含：
 - `PLAYBOOK.md` — 完整 AI 指令手册，**必读**，按它操作。
 - `engine/` — 通用引擎（`explain-engine.js` + `explain.css`），drop-in，勿改。
 - `explain-config.template.js` — 配置起始模板。
@@ -18,10 +21,10 @@ skill 目录 = 环境变量 `${CLAUDE_SKILL_DIR}`（通常 `~/.claude/skills/exp
 
 ## 执行步骤
 
-1. 读 `${CLAUDE_SKILL_DIR}/PLAYBOOK.md`，按其「安装步骤」与「作者流程」操作。
-2. **获取需求文档**：若调用时带了需求文档路径、或用户已给出文档/内容，直接用之；否则用 `AskUserQuestion` 询问用户——选项如「提供文档路径」「直接粘贴需求内容」「跳过，按 demo 现有界面与文案推断」。拿到后再继续，**缺文档时不要臆造需求**。
-3. 列出当前 demo 的所有 `.html` 页面，识别讲解会涉及的页面。
-4. 把 `${CLAUDE_SKILL_DIR}/engine/` 拷到当前项目根的 `engine/`。
-5. 给涉及的 `.html` 页面加 3 行 include（`engine/explain.css` + `engine/explain-engine.js` + `explain-config.js`），**不改动原 demo 既有内容**，仅加 include 行 + 新增 `engine/` 与 `explain-config.js`。
-6. 基于 `${CLAUDE_SKILL_DIR}/explain-config.template.js` 在项目根生成 `explain-config.js`：把每条需求映射成 steps；需要 demo 专属操作时用 `Explain.registerAction` 注册；任何伪造/注入的演示态用 `Explain.registerCleanup` 还原；退出需关闭的弹窗/抽屉用 `Explain.registerExit`。每步 setup 自包含（可从任意步骤点直接跳入）；弹窗/抽屉过渡后给 `{t:'wait',ms:200~300}` 再定位。
+1. 读 skill 目录下的 `PLAYBOOK.md`（Claude Code: `${CLAUDE_SKILL_DIR}/PLAYBOOK.md`；Codex: `~/.codex/skills/explain/PLAYBOOK.md`），按其「安装步骤」与「作者流程」操作。
+2. **定位 demo 根**：找到含 `.html` 的目录作为 demo 根——它可能就是当前目录，也可能是子文件夹（如 `demo/`）。**需求文档**可能在兄弟文件夹（如 `需求文档/`），两处都看一下。
+3. **获取需求文档**：若用户已提供（路径或内容）直接用之；否则用 `AskUserQuestion` 询问用户——选项如「提供文档路径」「直接粘贴需求内容」「跳过，按 demo 现有界面与文案推断」。拿到后再继续，**缺文档时不要臆造需求**。
+4. 把 skill 目录下的 `engine/` 拷到 **demo 根**（与 `.html` 同级）。
+5. 给 demo 根里涉及的 `.html` 页面加 3 行 include（`engine/explain.css` + `engine/explain-engine.js` + `explain-config.js`，相对路径），**不改动原 demo 既有内容**，仅加 include 行 + 新增 `engine/` 与 `explain-config.js`。
+6. 基于 skill 目录下的 `explain-config.template.js` 在 demo 根生成 `explain-config.js`：把每条需求映射成 steps；需要 demo 专属操作时用 `Explain.registerAction` 注册；任何伪造/注入的演示态用 `Explain.registerCleanup` 还原；退出需关闭的弹窗/抽屉用 `Explain.registerExit`。每步 setup 自包含（可从任意步骤点直接跳入）；弹窗/抽屉过渡后给 `{t:'wait',ms:200~300}` 再定位。
 7. 完成后告诉用户如何用浏览器验证（点右下角「📖 需求讲解」→ 选需求卡片 → 走右侧步骤点）。

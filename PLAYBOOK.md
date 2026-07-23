@@ -13,6 +13,8 @@
 
 ## 安装步骤
 
+> 「demo 项目根」= 含 `.html` 的目录；它可能就是你的当前目录，也可能是子文件夹（如 `demo/`）。需求文档可能在兄弟文件夹（如 `需求文档/`）。下面所有 `engine/`、`explain-config.js` 都放进 demo 根。
+
 1. 把 `engine/` 文件夹拷进 demo 项目根目录（与各 `.html` 同级）。
 2. 在**每个讲解会涉及的 `.html` 页面**：
    - `<head>` 里加：`<link rel="stylesheet" href="engine/explain.css">`
