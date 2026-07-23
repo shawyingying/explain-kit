@@ -50,7 +50,8 @@ Explain.config({
           page: 'xxx.html',     // 该步骤所在页面（相对 demo 根）
           setup: [              // 进入该步骤前依次执行的「揭示动作」
             { t: 'click', sel: '#someBtn' },
-            { t: 'wait', ms: 200 }
+            { t: 'wait', ms: 200 },
+            { t: 'annotate', sel: '#someField', label: '状态：待审核', variant: 'warn' }
           ],
           target: '.some-el',   // 聚光灯高亮的元素（CSS 选择器）
           closest: '.row',      // 可选：target 命中后再向上取最近祖先作为高亮框
@@ -65,6 +66,15 @@ Explain.config({
 ### 内置动作（setup 里可直接用）
 - `{ t: 'click', sel: '#sel' }` — 点击选择器命中的第一个元素（复用 demo 既有事件监听）。
 - `{ t: 'wait', ms: 200 }` — 等待 ms 毫秒（给弹窗/抽屉过渡或 DOM 显隐留时间）。
+- `{ t: 'annotate', sel: '#sel', label: '状态：待审核', pos: 'right', variant: 'warn' }` — 在元素旁钉一个标注气泡，就地显示 demo 视觉看不到的信息（状态、角色、数据流向、权限等）。`pos`：`right`(默认)/`left`/`top`/`bottom`；`variant`：`info`/`success`/`warn`/`danger`（默认深色）。**每步开始时自动清除**，无需自己写 cleanup。
+- `{ t: 'simulate', msg: '✓ 已提交，进入审核队列', type: 'success', ms: 2600 }` — 弹一条临时通知，模拟原型做不到的后端响应 / 状态变更 / 权限拦截。`type`：`info`/`success`/`warn`/`danger`；`ms` 显示时长（默认 2600）。**每步开始时自动清除**。
+
+### 把「demo 看不到」的需求内容补出来
+需求文档里的状态、数据流、权限、异步结果、边界规则，往往没有对应视觉元素。用这几种方式补：
+- **状态 / 角色 / 数据流** → `annotate`：在相关元素旁钉标签（如「状态：待审核」「流向：表单→校验→入库」「仅管理员可改」）。
+- **状态流转 / 异步结果 / 权限拦截** → `simulate`：弹通知模拟（如「✓ 已提交，进入审核队列」「⚠ 该状态下不可编辑」）。状态流转天然拆成多个 step，每步一个状态。
+- **规则 / 边界条件 / 对应需求条款** → 直接写进 step 的 `text`（支持 HTML，可放小表 / 列表）。
+- `annotate` 与 `simulate` 都是引擎内置、每步自动清除，无需自己写 cleanup。
 
 ### 自定义动作（demo 专属操作，如模拟上传、切换开关、伪造异常态）
 ```js

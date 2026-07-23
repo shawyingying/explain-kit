@@ -25,13 +25,13 @@ Explain.config({
         },
         {
           title: '内容级·跟随分类开关', page: 'detail.html',
-          setup: [{ t: 'click', sel: '#addContentBtn' }, { t: 'wait', ms: 240 }, { t: 'uploadFile' }, { t: 'wait', ms: 140 }, { t: 'click', sel: '#ctNextBtn' }, { t: 'wait', ms: 220 }],
+          setup: [{ t: 'click', sel: '#addContentBtn' }, { t: 'wait', ms: 240 }, { t: 'uploadFile' }, { t: 'wait', ms: 140 }, { t: 'click', sel: '#ctNextBtn' }, { t: 'wait', ms: 220 }, { t: 'simulate', msg: '✓ 标签策略已按当前分类配置<b>固化为快照</b>', type: 'success', ms: 3200 }],
           target: '#ctFollowToggle', closest: '.ct-toggle-row',
           text: '上传内容时标签策略默认<b>「跟随分类：打开」</b>，沿用所属分类的标签配置，并在提交时刻<b>固化为快照</b>；后续分类配置变更不再影响该内容，减少逐内容重复配置。'
         },
         {
           title: '内容级·关闭跟随后的自定义标签', page: 'detail.html',
-          setup: [{ t: 'click', sel: '#addContentBtn' }, { t: 'wait', ms: 240 }, { t: 'uploadFile' }, { t: 'wait', ms: 140 }, { t: 'click', sel: '#ctNextBtn' }, { t: 'wait', ms: 200 }, { t: 'uncheckFollow' }, { t: 'wait', ms: 180 }],
+          setup: [{ t: 'click', sel: '#addContentBtn' }, { t: 'wait', ms: 240 }, { t: 'uploadFile' }, { t: 'wait', ms: 140 }, { t: 'click', sel: '#ctNextBtn' }, { t: 'wait', ms: 200 }, { t: 'uncheckFollow' }, { t: 'wait', ms: 180 }, { t: 'annotate', sel: '.ct-rule-options', label: '内容级 <b>覆盖</b> 分类级', pos: 'right', variant: 'warn' }],
           target: '.ct-rule-options',
           text: '关闭「跟随分类」后，下方启用<b>智能打标 / 指定规则打标</b>二选一（与分类级选项一致），<b>内容级覆盖分类级</b>。内容级配置仅上传时可设，<b>上传后不可修改</b>，需用新策略时重新上传。'
         },

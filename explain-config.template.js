@@ -14,7 +14,9 @@ Explain.config({
           page: 'index.html',                 // 该步所在页面（相对项目根）
           setup: [                            // 进入该步前依次执行的揭示动作
             { t: 'click', sel: '#someBtn' },  // 内置：点击元素（复用 demo 既有事件）
-            { t: 'wait', ms: 200 }            // 内置：等待过渡 / DOM 显隐
+            { t: 'wait', ms: 200 },           // 内置：等待过渡 / DOM 显隐
+            // { t: 'annotate', sel: '#someField', label: '状态：待审核', variant: 'warn' }, // 内置：元素旁钉标签（状态/角色/数据流）
+            // { t: 'simulate', msg: '✓ 已提交', type: 'success', ms: 2600 }                  // 内置：弹通知模拟后端反馈
           ],
           target: '.some-element',            // 聚光灯高亮的元素（CSS 选择器）
           closest: '',                        // 可选：命中后向上取最近祖先作为高亮框

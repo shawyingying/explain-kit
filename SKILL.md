@@ -29,5 +29,5 @@ skill 目录：
 4. **获取需求文档**：若用户已提供直接用之；否则用 `AskUserQuestion` 询问——选项如「提供文档路径」「直接粘贴需求内容」「跳过，按 demo 现有界面与文案推断」。**多份文档时**，再用 `AskUserQuestion` 问「逐个生成」还是「一次性生成」并给利弊（逐个：可逐条验证、出错范围小、可中途调写法，但慢；一次性：快、能通盘去重排序，但配置大、一条错全盘受影响、难复核），建议默认逐个跑通第一条再批量。**缺文档时不要臆造需求**。
 5. 把 skill 目录下的 `engine/` 拷到**副本根**（与 `.html` 同级）。
 6. 给副本里涉及的 `.html` 页面加 3 行 include（`engine/explain.css` + `engine/explain-engine.js` + `explain-config.js`，相对路径），仅加 include 行 + 新增 `engine/` 与 `explain-config.js`，不动副本里复制的原 demo 内容。
-7. 基于 skill 目录下的 `explain-config.template.js` 在副本根生成 `explain-config.js`：把每条需求映射成 steps；需要 demo 专属操作时用 `Explain.registerAction` 注册；任何伪造/注入的演示态用 `Explain.registerCleanup` 还原；退出需关闭的弹窗/抽屉用 `Explain.registerExit`。每步 setup 自包含（可从任意步骤点直接跳入）；弹窗/抽屉过渡后给 `{t:'wait',ms:200~300}` 再定位。
+7. 基于 skill 目录下的 `explain-config.template.js` 在副本根生成 `explain-config.js`：把每条需求映射成 steps；需要 demo 专属操作时用 `Explain.registerAction` 注册；任何伪造/注入的演示态用 `Explain.registerCleanup` 还原；退出需关闭的弹窗/抽屉用 `Explain.registerExit`。每步 setup 自包含（可从任意步骤点直接跳入）；弹窗/抽屉过渡后给 `{t:'wait',ms:200~300}` 再定位。**需求里 demo 视觉看不到的状态/数据流/权限/异步结果**，用内置 `{t:'annotate'}`（元素旁钉标签）与 `{t:'simulate'}`（弹通知模拟后端反馈）补出来——两者每步自动清除，详见 PLAYBOOK「内置动作」。
 8. 完成后告诉用户用浏览器打开**副本**里的 `.html` 验证（点右下角「📖 需求讲解」→ 选需求卡片 → 走右侧步骤点；讲解卡挡内容时可拖标题栏移开）。

@@ -22,6 +22,8 @@
   var currentPage = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   var curReq = null, curStep = 0;
   var calloutPinned = false, pinX = 0, pinY = 0;
+  var annotates = [];
+  var simulateStack = null;
   var el = {};
 
   var Explain = {
@@ -141,6 +143,7 @@
     curStep = n;
     var step = curReq.steps[n];
     saveState((config.reqs || []).indexOf(curReq), n);
+    cleanupInjected();
     if (cleanupFn) { try { cleanupFn(); } catch (e) {} }
     if (step.page.toLowerCase() !== currentPage) { location.href = step.page; return; }
     showOverlay();
@@ -190,6 +193,8 @@
     return new Promise(function (resolve) {
       if (act.t === 'wait') { setTimeout(resolve, act.ms || 150); return; }
       if (act.t === 'click') { var n = document.querySelector(act.sel); if (n) n.click(); resolve(); return; }
+      if (act.t === 'annotate') { addAnnotate(act); resolve(); return; }
+      if (act.t === 'simulate') { showSimulate(act.msg || '', act.type, act.ms); resolve(); return; }
       var fn = customActions[act.t];
       if (fn) { Promise.resolve(fn(act)).then(resolve); return; }
       resolve();
@@ -211,6 +216,7 @@
     requestAnimationFrame(function () {
       placeSpotlight(target);
       placeCallout(target);
+      positionAnnotates();
       el.spotlight.style.opacity = '1';
     });
   }
@@ -284,6 +290,61 @@
     head.addEventListener('pointercancel', end);
   }
 
+  // ---------- 标注徽标 / 模拟反馈（内置动作，每步自动清除）----------
+  function addAnnotate(act) {
+    var badge = h('div', 'ex-annotate' + (act.variant ? ' ex-annotate-' + act.variant : ''));
+    badge.innerHTML = act.label || '';
+    badge.style.display = 'none';
+    document.body.appendChild(badge);
+    annotates.push({ el: badge, sel: act.sel, pos: act.pos || 'right' });
+    positionAnnotates();
+  }
+
+  function positionAnnotates() {
+    annotates.forEach(function (a) {
+      var n = document.querySelector(a.sel);
+      if (!n) { a.el.style.display = 'none'; return; }
+      var r = n.getBoundingClientRect();
+      a.el.style.display = '';
+      if (a.pos === 'left') {
+        a.el.style.left = (r.left - 10) + 'px'; a.el.style.top = (r.top + r.height / 2) + 'px';
+        a.el.style.transform = 'translate(-100%,-50%)';
+      } else if (a.pos === 'top') {
+        a.el.style.left = (r.left + r.width / 2) + 'px'; a.el.style.top = (r.top - 10) + 'px';
+        a.el.style.transform = 'translate(-50%,-100%)';
+      } else if (a.pos === 'bottom') {
+        a.el.style.left = (r.left + r.width / 2) + 'px'; a.el.style.top = (r.bottom + 10) + 'px';
+        a.el.style.transform = 'translate(-50%,0)';
+      } else {
+        a.el.style.left = (r.right + 10) + 'px'; a.el.style.top = (r.top + r.height / 2) + 'px';
+        a.el.style.transform = 'translateY(-50%)';
+      }
+    });
+  }
+
+  function cleanupInjected() {
+    annotates.forEach(function (a) { if (a.el.parentNode) a.el.parentNode.removeChild(a.el); });
+    annotates = [];
+    if (simulateStack) simulateStack.innerHTML = '';
+  }
+
+  function showSimulate(msg, type, ms) {
+    if (!simulateStack) {
+      simulateStack = h('div', 'ex-simulate-stack');
+      document.body.appendChild(simulateStack);
+    }
+    var item = h('div', 'ex-simulate ex-simulate-' + (type || 'info'));
+    item.innerHTML = msg;
+    simulateStack.appendChild(item);
+    item.offsetWidth;
+    item.classList.add('show');
+    var dur = ms || 2600;
+    item._t = setTimeout(function () {
+      item.classList.remove('show');
+      setTimeout(function () { if (item.parentNode) item.parentNode.removeChild(item); }, 250);
+    }, dur);
+  }
+
   var reposing = false;
   function reposition() {
     if (!curReq || !el.overlay.classList.contains('show')) return;
@@ -294,6 +355,7 @@
       var step = curReq.steps[curStep];
       var target = resolveTarget(step);
       if (target) { placeSpotlight(target); placeCallout(target); }
+      positionAnnotates();
     });
   }
 
@@ -302,6 +364,7 @@
     clearState();
     if (cleanupFn) { try { cleanupFn(); } catch (e) {} }
     if (exitFn) { try { exitFn(); } catch (e) {} }
+    cleanupInjected();
     curReq = null; curStep = 0;
     calloutPinned = false;
     el.overlay.classList.remove('show');

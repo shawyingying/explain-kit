@@ -69,3 +69,19 @@
 
 /* 异常态演示提示条（运行时由项目自定义动作注入，样式通用） */
 .ex-exception-hint{margin:0 0 10px;padding:7px 10px;background:#fff3d6;border:1px solid #ffe3a8;border-radius:6px;color:#d98b00;font-size:12px;line-height:1.5}
+
+/* 标注徽标（annotate 动作注入：就地显示状态/角色/数据流等 demo 视觉看不到的信息） */
+.ex-annotate{position:fixed;z-index:1001;max-width:220px;padding:5px 10px;border-radius:6px;background:#1d2129e8;color:#fff;font-size:12px;line-height:1.45;box-shadow:0 4px 12px rgba(0,0,0,.18);pointer-events:none}
+.ex-annotate.ex-annotate-info{background:var(--blue,#3370ff)}
+.ex-annotate.ex-annotate-success{background:#00b42a}
+.ex-annotate.ex-annotate-warn{background:#ff7d00}
+.ex-annotate.ex-annotate-danger{background:#f53f3f}
+
+/* 模拟系统反馈（simulate 动作注入：弹临时通知模拟后端响应/状态变更/权限拦截） */
+.ex-simulate-stack{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:1003;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.ex-simulate{padding:9px 16px;border-radius:8px;background:#1d2129e8;color:#fff;font-size:13px;line-height:1.5;box-shadow:0 8px 24px rgba(0,0,0,.2);opacity:0;transform:translateY(-10px);transition:opacity .2s,transform .2s;max-width:80vw}
+.ex-simulate.show{opacity:1;transform:translateY(0)}
+.ex-simulate.ex-simulate-info{background:var(--blue,#3370ff)}
+.ex-simulate.ex-simulate-success{background:#00b42a}
+.ex-simulate.ex-simulate-warn{background:#ff7d00}
+.ex-simulate.ex-simulate-danger{background:#f53f3f}
