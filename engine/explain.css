@@ -35,7 +35,8 @@
 /* 讲解卡 */
 .ex-callout{position:fixed;z-index:1001;width:360px;max-width:90vw;background:#fff;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.18);pointer-events:auto;display:none;flex-direction:column;overflow:hidden}
 .ex-callout.show{display:flex}
-.ex-callout-head{padding:12px 16px;background:var(--blue,#3370ff);color:#fff}
+.ex-callout-head{position:relative;padding:12px 16px;background:var(--blue,#3370ff);color:#fff;cursor:move;user-select:none;-webkit-user-select:none;touch-action:none}
+.ex-callout-head::after{content:"⠿";position:absolute;top:50%;right:12px;transform:translateY(-50%);font-size:16px;opacity:.5;letter-spacing:-2px}
 .ex-callout-code{font-size:12px;opacity:.85}
 .ex-callout-title{font-size:15px;font-weight:600;margin-top:2px;line-height:1.35}
 .ex-callout-body{padding:14px 16px;font-size:13px;line-height:1.7;color:#4e5969;max-height:42vh;overflow-y:auto}

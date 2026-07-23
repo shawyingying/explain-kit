@@ -21,6 +21,7 @@
 
   var currentPage = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   var curReq = null, curStep = 0;
+  var calloutPinned = false, pinX = 0, pinY = 0;
   var el = {};
 
   var Explain = {
@@ -95,6 +96,8 @@
 
     window.addEventListener('resize', reposition);
     window.addEventListener('scroll', reposition, true);
+
+    initCalloutDrag();
   }
 
   // ---------- 状态 ----------
@@ -134,6 +137,7 @@
   // ---------- 步骤跳转 ----------
   function gotoStep(n) {
     if (!curReq) return;
+    calloutPinned = false;
     curStep = n;
     var step = curReq.steps[n];
     saveState((config.reqs || []).indexOf(curReq), n);
@@ -221,6 +225,7 @@
   }
 
   function placeCallout(target) {
+    if (calloutPinned) { setCalloutPos(pinX, pinY); return; }
     var r = target.getBoundingClientRect();
     var cw = 360, ch = el.callout.offsetHeight || 220;
     var gap = 16, vw = window.innerWidth, vh = window.innerHeight;
@@ -246,6 +251,39 @@
 
   function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
+  function setCalloutPos(x, y) {
+    var w = el.callout.offsetWidth || 360;
+    var h = el.callout.offsetHeight || 220;
+    el.callout.style.left = clamp(x, 8, window.innerWidth - w - 8) + 'px';
+    el.callout.style.top = clamp(y, 8, window.innerHeight - h - 8) + 'px';
+  }
+
+  function initCalloutDrag() {
+    var head = el.calloutHead;
+    var dragging = false, sx = 0, sy = 0, ox = 0, oy = 0;
+    head.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      dragging = true;
+      var r = el.callout.getBoundingClientRect();
+      ox = r.left; oy = r.top; sx = e.clientX; sy = e.clientY;
+      try { head.setPointerCapture(e.pointerId); } catch (_) {}
+      e.preventDefault();
+    });
+    head.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      setCalloutPos(ox + (e.clientX - sx), oy + (e.clientY - sy));
+    });
+    function end(e) {
+      if (!dragging) return;
+      dragging = false;
+      var r = el.callout.getBoundingClientRect();
+      calloutPinned = true; pinX = r.left; pinY = r.top;
+      try { head.releasePointerCapture(e.pointerId); } catch (_) {}
+    }
+    head.addEventListener('pointerup', end);
+    head.addEventListener('pointercancel', end);
+  }
+
   var reposing = false;
   function reposition() {
     if (!curReq || !el.overlay.classList.contains('show')) return;
@@ -265,6 +303,7 @@
     if (cleanupFn) { try { cleanupFn(); } catch (e) {} }
     if (exitFn) { try { exitFn(); } catch (e) {} }
     curReq = null; curStep = 0;
+    calloutPinned = false;
     el.overlay.classList.remove('show');
     el.close.classList.remove('show');
     el.callout.classList.remove('show');

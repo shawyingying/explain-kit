@@ -35,7 +35,7 @@ echo ""
 echo "用法："
 echo "  • Claude Code：在任意原型 demo 文件夹敲 /explain"
 echo "  • Codex：在任意原型 demo 文件夹说「给 demo 加需求讲解」（或敲 /explain）"
-echo "  两者都会自动：读 PLAYBOOK → 拷 engine/ 进 demo → 加 include → 生成 explain-config.js（缺文档会先问你）"
+echo "  两者都会自动：读 PLAYBOOK → 复制 demo 到同级 <原名>-讲解/ 副本 → 在副本里拷 engine/ + 加 include + 生成 explain-config.js（原 demo 不动；缺文档/多份文档会先问你）"
 if [ -d "$OLD_HOME" ]; then
   echo ""
   echo "ℹ️  旧版目录 $OLD_HOME 已不再使用，可手动删除：rm -rf \"$OLD_HOME\""

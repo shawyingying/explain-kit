@@ -9,24 +9,30 @@
 ## 适用前提
 
 - 纯静态 HTML/CSS/JS 原型（直接用浏览器打开 `.html`，无构建、无后端）。
-- demo 可能由多个 `.html` 页面组成，需求讲解往往跨页。
+- demo 可能由多个 `.html` 页面组成，需求讲解往往跨页；**单页 demo 也支持**（所有步骤 `page` 填同一个文件名即可，不触发跨页跳转）。
+- 需求编号/标题自定义，不要求 `REQ` 开头（`REQ-XX` 只是模板占位）；需求文档格式不限（用户故事 / Jira / 一段话都行，按 schema 抽 steps）。
+- 局限：demo 若用了 Shadow DOM / iframe / 前端框架组件，CSS 选择器可能命中不了。
 
 ## 安装步骤
 
-> 「demo 项目根」= 含 `.html` 的目录；它可能就是你的当前目录，也可能是子文件夹（如 `demo/`）。需求文档可能在兄弟文件夹（如 `需求文档/`）。下面所有 `engine/`、`explain-config.js` 都放进 demo 根。
+> 「demo 根」= 含 `.html` 的目录（可能就是当前目录，也可能是子文件夹如 `demo/`）。需求文档可能在兄弟文件夹（如 `需求文档/`）。
+> **全程在原 demo 的副本里操作，原 demo 一个字都不改**——不满意直接删副本重来。
 
-1. 把 `engine/` 文件夹拷进 demo 项目根目录（与各 `.html` 同级）。
-2. 在**每个讲解会涉及的 `.html` 页面**：
+1. **复制 demo 到同级副本**：在 demo 根的同级建 `<原名>-讲解/`，把整个 demo 根 `cp -R` 复制进去。
+   - **单文件 demo**（一个 `.html` 躺在与 demo 无关的大杂烩文件夹里）：不要复制整个文件夹，只复制该 `.html` + 它引用的本地资源——`<link>/<script>/<img>/<source>/<video>/<audio>` 里的本地路径（不含 `http(s)://`、`data:`），保持原目录结构；若原代码用了绝对路径（如 `/assets/...`、`file:///`、`C:\...`），在副本里改成相对路径，避免引用失效。CSS 里的 `url()` 同理处理。
+   - 若不确定遗漏了哪些资源，退回到「整份复制 demo 根」更稳。
+2. 把 `engine/` 文件夹拷进**副本根**（与各 `.html` 同级）。
+3. 在副本里**每个讲解会涉及的 `.html` 页面**：
    - `<head>` 里加：`<link rel="stylesheet" href="engine/explain.css">`
    - `</body>` 前、各页面原有 `<script>` **之后**加（顺序重要：引擎先于配置）：
      ```html
      <script src="engine/explain-engine.js"></script>
      <script src="explain-config.js"></script>
      ```
-3. 在 demo 项目根创建 `explain-config.js`（可从 `explain-config.template.js` 改起）。
-4. 浏览器打开 demo 验证：右下角出现「📖 需求讲解」按钮即装好。
+4. 在副本根创建 `explain-config.js`（可从 `explain-config.template.js` 改起）。
+5. 浏览器打开**副本**里的 `.html` 验证：右下角出现「📖 需求讲解」按钮即装好。
 
-> 不改动 demo 原有 HTML 结构与 JS/CSS 逻辑——只加 include 行 + 新增 `engine/` 与 `explain-config.js`。
+> 原 demo 一字不改——所有 include、`engine/`、`explain-config.js` 都落在 `<原名>-讲解/` 副本里。
 
 ## 配置 schema（explain-config.js）
 
@@ -34,7 +40,7 @@
 Explain.config({
   reqs: [
     {
-      code: 'REQ-XX',           // 需求编号，卡片左上角
+      code: 'REQ-XX',           // 需求编号（自定义，不要求 REQ 开头），卡片左上角
       title: '需求标题',         // 卡片标题
       tag: '已就绪',            // 卡片角标；未就绪用 '讲解待补充' + ready:false
       ready: true,              // false 时卡片置灰，点击提示待补充
@@ -77,7 +83,9 @@ Explain.registerAction('myAction', function (act) {
 
 对每个要讲解的需求：
 
-1. **先拿到需求文档**：若用户已提供（路径或内容）直接读；若没有，先向用户索要（让用户提供文档路径、粘贴内容，或按 demo 现有界面与文案推断），**缺文档时不要臆造需求**。拿到后提炼这条需求在 demo 里的几个落点（哪个页面、哪个组件、哪个交互）。
+1. **先拿到需求文档**：若用户已提供（路径或内容）直接读；若没有，先向用户索要（让用户提供文档路径、粘贴内容，或按 demo 现有界面与文案推断），**缺文档时不要臆造需求**。
+   - **多份文档时**：用 `AskUserQuestion` 问用户「逐个生成」还是「一次性生成」，并给出利弊——逐个：每条可单独验证、出错只影响一条、可中途调写法，但来回多、慢；一次性：快、能通盘去重/排序步骤，但配置文件大、一条错全盘受影响、难逐条复核。建议默认逐个跑通第一条再批量补齐。
+   拿到后提炼这条需求在 demo 里的几个落点（哪个页面、哪个组件、哪个交互）。
 2. **定位 demo 元素**：在对应 `.html` 里找到这些落点的选择器（按钮、表单、抽屉、表格行等）。注意：要高亮的元素可能默认隐藏（在弹窗/抽屉/折叠区里）。
 3. **设计揭示动作**：让目标元素可见。优先复用 demo 既有按钮——`{t:'click',sel:'#打开按钮'}`。若需要更复杂操作（上传文件后才能下一步、切开关、伪造异常态），写自定义动作并 `registerAction`。
 4. **每步自包含**：每步的 setup 要能从干净状态独立呈现该步——不要依赖「上一步留下的状态」。因为用户可从右侧任意点直接跳到任意步。常见模式：每步 setup 都从「打开入口」开始。
@@ -108,3 +116,4 @@ Explain.registerAction('myAction', function (act) {
 - 浏览器控制台执行 `sessionStorage.removeItem('k_explain_state')` 可清除「卡在讲解中」的状态。
 - 目标没高亮：检查 target 选择器在该步 setup 执行后是否真的存在于 DOM 且可见。
 - 讲解卡位置不对：确认 target 在视口内（引擎会 `scrollIntoView`），且页面没有把目标固定在无法滚动到的区域。
+- 讲解卡挡住重要内容：可**拖动其标题栏**移到别处（拖动后位置固定，滚动/缩放也不动）；切到下一步会自动重定位。
