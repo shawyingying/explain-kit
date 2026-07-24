@@ -1,15 +1,16 @@
 /* ===== 需求讲解遮罩层 · 通用样式 explain-engine.css =====
    随 explain-engine.js 分发，默认全部隐藏，不改动宿主 demo 视觉与交互。
-   通过 .show 控制显隐；z-index 900+ 高于常见抽屉(31)/弹窗(20)。 */
+   通过 .show 控制显隐；讲解层 z-index 置顶（999900+），盖过 demo 的抽屉/弹窗/tooltip。
+   讲解进行时 <html> 加 .ex-explaining，压住 demo 自带 hover 浮层。 */
 
 /* 右下角启动按钮 */
-.ex-launcher{position:fixed;right:24px;bottom:24px;z-index:1000;display:flex;align-items:center;gap:6px;height:42px;padding:0 18px;border:none;border-radius:21px;background:var(--blue,#3370ff);color:#fff;font-size:14px;font-weight:600;box-shadow:0 6px 18px rgba(51,112,255,.35);cursor:pointer;transition:transform .15s,box-shadow .15s}
+.ex-launcher{position:fixed;right:24px;bottom:24px;z-index:999900;display:flex;align-items:center;gap:6px;height:42px;padding:0 18px;border:none;border-radius:21px;background:var(--blue,#3370ff);color:#fff;font-size:14px;font-weight:600;box-shadow:0 6px 18px rgba(51,112,255,.35);cursor:pointer;transition:transform .15s,box-shadow .15s}
 .ex-launcher:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(51,112,255,.42)}
 .ex-launcher .ex-launcher-icon{font-size:16px;line-height:1}
 .ex-launcher.active{background:#1d2129}
 
 /* 底部需求卡片栏 */
-.ex-bar{position:fixed;left:0;right:0;bottom:0;z-index:1000;display:none;align-items:stretch;padding:14px 20px 16px;background:linear-gradient(180deg,rgba(255,255,255,0),#fff 35%)}
+.ex-bar{position:fixed;left:0;right:0;bottom:0;z-index:999900;display:none;align-items:stretch;padding:14px 20px 16px;background:linear-gradient(180deg,rgba(255,255,255,0),#fff 35%)}
 .ex-bar.show{display:flex}
 .ex-bar-inner{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 10px;scroll-behavior:smooth}
 .ex-bar-inner::-webkit-scrollbar{height:6px}
@@ -24,16 +25,16 @@
 .ex-card.disabled .ex-card-tag{color:#f53f3f}
 
 /* 讲解遮罩容器（容器不拦截事件，子项按需启用） */
-.ex-overlay{position:fixed;inset:0;z-index:900;display:none;pointer-events:none}
+.ex-overlay{position:fixed;inset:0;z-index:999900;display:none;pointer-events:none}
 .ex-overlay.show{display:block}
 /* 透明护盾：拦截对 demo 的误点（如点遮罩关弹窗），不挡视觉 */
-.ex-shield{position:fixed;inset:0;z-index:950;background:transparent;pointer-events:auto}
+.ex-shield{position:fixed;inset:0;z-index:999950;background:transparent;pointer-events:auto}
 
-/* 聚光灯：透明贴合目标，box-shadow 周边变暗 */
-.ex-spotlight{position:fixed;border:2px solid var(--blue,#3370ff);border-radius:8px;background:transparent;box-shadow:0 0 0 100vmax rgba(0,0,0,.5);pointer-events:none;z-index:900;opacity:0;transition:top .22s,left .22s,width .22s,height .22s,opacity .2s}
+/* 聚光灯：透明贴合目标，box-shadow 周边变暗（置顶，盖过 demo 抽屉/弹窗） */
+.ex-spotlight{position:fixed;border:2px solid var(--blue,#3370ff);border-radius:8px;background:transparent;box-shadow:0 0 0 100vmax rgba(0,0,0,.5);pointer-events:none;z-index:999900;opacity:0;transition:top .22s,left .22s,width .22s,height .22s,opacity .2s}
 
 /* 讲解卡 */
-.ex-callout{position:fixed;z-index:1001;width:360px;max-width:90vw;background:#fff;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.18);pointer-events:auto;display:none;flex-direction:column;overflow:hidden}
+.ex-callout{position:fixed;z-index:999990;width:360px;max-width:90vw;background:#fff;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.18);pointer-events:auto;display:none;flex-direction:column;overflow:hidden}
 .ex-callout.show{display:flex}
 .ex-callout-head{position:relative;padding:12px 16px;background:var(--blue,#3370ff);color:#fff;cursor:move;user-select:none;-webkit-user-select:none;touch-action:none}
 .ex-callout-head::after{content:"⠿";position:absolute;top:50%;right:12px;transform:translateY(-50%);font-size:16px;opacity:.5;letter-spacing:-2px}
@@ -51,7 +52,7 @@
 .ex-btn.primary:hover:not(:disabled){background:#2860ec;color:#fff}
 
 /* 右侧竖向步骤点 */
-.ex-dots{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:1001;display:none;flex-direction:column;align-items:center;gap:14px;pointer-events:auto}
+.ex-dots{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:999990;display:none;flex-direction:column;align-items:center;gap:14px;pointer-events:auto}
 .ex-dots.show{display:flex}
 .ex-dot{width:13px;height:13px;border-radius:50%;border:2px solid rgba(255,255,255,.7);background:rgba(255,255,255,.35);cursor:pointer;padding:0;transition:.15s;position:relative}
 .ex-dot:hover{transform:scale(1.2)}
@@ -60,28 +61,47 @@
 .ex-dot:hover .ex-dot-tip{opacity:1}
 
 /* 退出讲解按钮 */
-.ex-close{position:fixed;top:16px;right:16px;z-index:1002;height:34px;padding:0 16px;border:none;border-radius:17px;background:#1d2129e8;color:#fff;font-size:13px;cursor:pointer;display:none;align-items:center;gap:6px;pointer-events:auto;transition:.15s}
+.ex-close{position:fixed;top:16px;right:16px;z-index:999995;height:34px;padding:0 16px;border:none;border-radius:17px;background:#1d2129e8;color:#fff;font-size:13px;cursor:pointer;display:none;align-items:center;gap:6px;pointer-events:auto;transition:.15s}
 .ex-close.show{display:flex}
 .ex-close:hover{background:#000}
 
-.ex-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);opacity:0;background:#1d2129e8;color:#fff;padding:12px 22px;border-radius:8px;font-size:13px;z-index:1003;pointer-events:none;transition:.2s}
+.ex-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);opacity:0;background:#1d2129e8;color:#fff;padding:12px 22px;border-radius:8px;font-size:13px;z-index:999999;pointer-events:none;transition:.2s}
 .ex-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 
 /* 异常态演示提示条（运行时由项目自定义动作注入，样式通用） */
 .ex-exception-hint{margin:0 0 10px;padding:7px 10px;background:#fff3d6;border:1px solid #ffe3a8;border-radius:6px;color:#d98b00;font-size:12px;line-height:1.5}
 
 /* 标注徽标（annotate 动作注入：就地显示状态/角色/数据流等 demo 视觉看不到的信息） */
-.ex-annotate{position:fixed;z-index:1001;max-width:220px;padding:5px 10px;border-radius:6px;background:#1d2129e8;color:#fff;font-size:12px;line-height:1.45;box-shadow:0 4px 12px rgba(0,0,0,.18);pointer-events:none}
+.ex-annotate{position:fixed;z-index:999990;max-width:220px;padding:5px 10px;border-radius:6px;background:#1d2129e8;color:#fff;font-size:12px;line-height:1.45;box-shadow:0 4px 12px rgba(0,0,0,.18);pointer-events:none}
 .ex-annotate.ex-annotate-info{background:var(--blue,#3370ff)}
 .ex-annotate.ex-annotate-success{background:#00b42a}
 .ex-annotate.ex-annotate-warn{background:#ff7d00}
 .ex-annotate.ex-annotate-danger{background:#f53f3f}
 
 /* 模拟系统反馈（simulate 动作注入：弹临时通知模拟后端响应/状态变更/权限拦截） */
-.ex-simulate-stack{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:1003;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.ex-simulate-stack{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:999999;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
 .ex-simulate{padding:9px 16px;border-radius:8px;background:#1d2129e8;color:#fff;font-size:13px;line-height:1.5;box-shadow:0 8px 24px rgba(0,0,0,.2);opacity:0;transform:translateY(-10px);transition:opacity .2s,transform .2s;max-width:80vw}
 .ex-simulate.show{opacity:1;transform:translateY(0)}
 .ex-simulate.ex-simulate-info{background:var(--blue,#3370ff)}
 .ex-simulate.ex-simulate-success{background:#00b42a}
 .ex-simulate.ex-simulate-warn{background:#ff7d00}
 .ex-simulate.ex-simulate-danger{background:#f53f3f}
+
+/* 讲解进行中（<html>.ex-explaining）：压住 demo 自带 hover 浮层，避免遮挡聚光灯高亮目标。
+   覆盖主流 UI 库的 tooltip/popover；自定义命名的浮层在 explain-config.js 里补一条同样写法即可。
+   退出讲解 <html> 移除该 class，规则自动失效、浮层恢复。 */
+html.ex-explaining [role="tooltip"],
+html.ex-explaining .tooltip,
+html.ex-explaining .ant-tooltip,
+html.ex-explaining .ant-popover,
+html.ex-explaining .arco-tooltip,
+html.ex-explaining .arco-trigger-popup,
+html.ex-explaining .el-tooltip,
+html.ex-explaining .el-popper,
+html.ex-explaining .el-popover,
+html.ex-explaining .n-popover,
+html.ex-explaining .vc-tooltip,
+html.ex-explaining .popover,
+html.ex-explaining .tippy-box,
+html.ex-explaining [data-popper-escaped],
+html.ex-explaining [data-floating-ui-portal]{display:none !important}

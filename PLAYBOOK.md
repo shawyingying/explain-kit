@@ -115,7 +115,14 @@ Explain.registerAction('myAction', function (act) {
 - **不改 demo 原文件逻辑**：只加 include 行；揭示动作用 click 触发既有按钮，不重写 demo 的函数。
 - **幂等**：setup 动作与 cleanup 反复执行不应出错或产生残留。
 - **时序**：弹窗/抽屉有 CSS 过渡的，click 后给 `{t:'wait',ms:200~300}` 再定位，否则高亮框会贴在过渡中的位置。
-- **z-index**：讲解层 900+，高于常见抽屉(31)/弹窗(20)；若 demo 有更高 z-index 的浮层，可能需要在 `engine/explain.css` 调高。
+- **z-index 置顶、压住 demo 浮层**：讲解层 z-index 置顶（999900+），聚光灯压暗层盖过 demo 的抽屉/弹窗/tooltip，只透出高亮目标。讲解进行时引擎给 `<html>` 加 `ex-explaining` class，并自动隐藏主流 UI 库（Arco/Ant/Element/Tippy/floating-ui 等）的 hover tooltip。若你的 demo 用了非主流命名的 hover 浮层仍遮挡聚光灯，在 `explain-config.js` 末尾补一段 CSS 隐藏它（退出讲解自动恢复）：
+
+  ```js
+  var s=document.createElement('style');
+  s.textContent='html.ex-explaining .你的浮层选择器{display:none!important}';
+  document.head.appendChild(s);
+  ```
+  注意：讲解抽屉内元素时，抽屉其余部分会被压暗（聚光灯聚焦的固有效果）。
 - **提问按工具、且必须问**：凡需用户确认处（选需求文档、逐个/批量生成等），Claude Code 用 `AskUserQuestion`；Codex / Cursor 等没有该工具的，直接在对话里提问并**停下来等用户回答**，不要自作主张。demo 文件夹里的 README / 说明文档 ≠ 需求文档，不得自动当成需求文档。
 
 ## 参考示例

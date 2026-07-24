@@ -153,6 +153,7 @@
   }
 
   function showOverlay() {
+    document.documentElement.classList.add('ex-explaining');
     el.overlay.classList.add('show');
     el.close.classList.add('show');
     el.callout.classList.add('show');
@@ -361,6 +362,7 @@
 
   // ---------- 退出 ----------
   function exit() {
+    document.documentElement.classList.remove('ex-explaining');
     clearState();
     if (cleanupFn) { try { cleanupFn(); } catch (e) {} }
     if (exitFn) { try { exitFn(); } catch (e) {} }
